@@ -1,53 +1,65 @@
 #!/usr/bin/env python3
-""" Simple pagination """
-
+"""Deletion-resilient hypermedia pagination
+"""
 import csv
-import math
-from typing import List, Tuple
-
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """ Return a tuple of size two containing a start index and an end index
-        corresponding to the range of indexes to return in a list for those
-        particular pagination parameters.
-    """
-    start_index = (page - 1) * page_size
-    end_index = page * page_size
-    return (start_index, end_index)
+from typing import Dict, List
 
 
 class Server:
-    """ Server class to paginate a database of popular baby names. """
+    """Server class to paginate a database of popular baby names.
+    """
     DATA_FILE = "Popular_Baby_Names.csv"
-    
+
     def __init__(self):
-            """ Initialize instance. """
-            self.__dataset = None
-    
+        """Initializes a new Server instance.
+        """
+        self.__dataset = None
+        self.__indexed_dataset = None
+
     def dataset(self) -> List[List]:
-            """ Property decorator to return the dataset. """
-            return self.__dataset
-    
-    def get_dataset(self) -> List[List]:
-            """ Get the dataset. """
-            with open(self.DATA_FILE, newline='') as csvfile:
-                reader = csv.reader(csvfile)
-                dataset = []
-                for row in reader:
-                    dataset.append(row)
-                self.__dataset = dataset[1:]
-    
-            return self.__dataset
-    
-    def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-            """ Return list of rows from dataset. """
-            assert isinstance(page, int) and isinstance(page_size, int)
-            assert page > 0 and page_size > 0
-    
-            self.get_dataset()
-            if self.__dataset is None:
-             return []
-            
-            start, end = index_range(page, page_size)
-            return self.__dataset[start:end]
-    
+        """Cached dataset
+        """
+        if self.__dataset is None:
+            with open(self.DATA_FILE) as f:
+                reader = csv.reader(f)
+                dataset = [row for row in reader]
+            self.__dataset = dataset[1:]
+
+        return self.__dataset
+
+    def indexed_dataset(self) -> Dict[int, List]:
+        """Dataset indexed by sorting position, starting at 0
+        """
+        if self.__indexed_dataset is None:
+            dataset = self.dataset()
+            truncated_dataset = dataset[:1000]
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
+        return self.__indexed_dataset
+
+    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
+        """Retrieves info about a page from a given index and with a
+        specified size.
+        """
+        data = self.indexed_dataset()
+        assert index is not None and index >= 0 and index <= max(data.keys())
+        page_data = []
+        data_count = 0
+        next_index = None
+        start = index if index else 0
+        for i, item in data.items():
+            if i >= start and data_count < page_size:
+                page_data.append(item)
+                data_count += 1
+                continue
+            if data_count == page_size:
+                next_index = i
+                break
+        page_info = {
+            'index': index,
+            'next_index': next_index,
+            'page_size': len(page_data),
+            'data': page_data,
+        }
+        return page_info
