@@ -18,7 +18,7 @@ class Config:
 app.config.from_object(Config)  # Use Config as the app configuration
 
 @app.route('/')
-def index():
+def get_index() -> str:
     return render_template('index.html')
 
 if __name__ == '__main__':
