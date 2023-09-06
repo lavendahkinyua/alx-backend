@@ -46,3 +46,4 @@ class Server:
         if start > len(data):
             return []
         return data[start:end]
+    
