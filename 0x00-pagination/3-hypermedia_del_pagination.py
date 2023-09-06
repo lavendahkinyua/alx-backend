@@ -55,17 +55,17 @@ class Server:
         if self.__dataset is None:
             return {}
             
-            start, end = index_range(page, page_size)
-            data = self.__dataset[start:end]
-            total_pages = math.ceil(len(self.__dataset) / page_size)
-            next_page = page + 1 if page < total_pages else None
-            prev_page = page - 1 if page > 1 else None
-            return {
-                'page_size': len(data),
-                'page': page,
-                'data': data,
-                'next_page': next_page,
-                'prev_page': prev_page,
-                'total_pages': total_pages
-            }
+        start, end = index_range(page, page_size)
+        data = self.__dataset[start:end]
+        total_pages = math.ceil(len(self.__dataset) / page_size)
+        next_page = page + 1 if page < total_pages else None
+        prev_page = page - 1 if page > 1 else None
+        return {
+            'page_size': len(data),
+            'page': page,
+            'data': data,
+            'next_page': next_page,
+            'prev_page': prev_page,
+            'total_pages': total_pages
+        }
     
