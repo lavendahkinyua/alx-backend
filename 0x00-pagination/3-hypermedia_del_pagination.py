@@ -27,18 +27,17 @@ class Server:
     def dataset(self) -> List[List]:
      """ Property decorator to return the dataset. """
      return self.__dataset
-
-    def get_dataset(self) -> List[List]:
-        """ Get the dataset. """
-        with open(self.DATA_FILE, newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            dataset = []
-            for row in reader:
-                dataset.append(row)
-            self.__dataset = dataset[1:]
+    def indexed_dataset(self) -> Dict[int, List]:
+        """Dataset indexed by sorting position, starting at 0
+        """
+        if self.__indexed_dataset is None:
+            dataset = self.dataset()
+            truncated_dataset = dataset[:1000]
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
+        return self.__indexed_dataset
     
-        return self.__dataset
-
     def get_hyper_index(self, page: int = 1, page_size: int = 10) -> Dict[str, Any]:
         """ Return a dictionary containing the following key-value pairs:
                     - page_size: the length of the returned dataset page
