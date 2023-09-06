@@ -54,7 +54,7 @@ class Server:
         self.get_dataset()
         if self.__dataset is None:
             return {}
-  
+
         start, end = index_range(page, page_size)
         data = self.__dataset[start:end]
         total_pages = math.ceil(len(self.__dataset) / page_size)
