@@ -39,7 +39,7 @@ class Server:
     
         return self.__dataset
 
-    def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict[str, Any]:
+    def get_hyper_index(self, page: int = 1, page_size: int = 10) -> Dict[str, Any]:
         """ Return a dictionary containing the following key-value pairs:
                     - page_size: the length of the returned dataset page
                     - page: the current page number
