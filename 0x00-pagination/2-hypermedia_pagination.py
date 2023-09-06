@@ -41,27 +41,27 @@ class Server:
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict[str, Any]:
         """ Return a dictionary containing the following key-value pairs:
-                    - page_size: the length of the returned dataset page
-                    - page: the current page number
-                    - data: the dataset page (equivalent to return from previous task)
-                    - next_page: number of the next page, None if no next page
-                    - prev_page: number of the previous page, None if no previous page
-                    - total_pages: the total number of pages in the dataset as an integer
+            - page_size: the length of the returned dataset page
+            - page: the current page number
+            - data: the dataset page (equivalent to return from previous task)
+            - next_page: number of the next page, None if no next page
+             prev_page: number of the previous page, None if no previous page
+            - total_pages: the total number of pages in the dataset as an integer
         """
         assert isinstance(page, int) and isinstance(page_size, int)
         assert page > 0 and page_size > 0
 
         self.get_dataset()
         if self.__dataset is None:
-         return {}
+            return {}
             
         start, end = index_range(page, page_size)
         data = self.__dataset[start:end]
         total_pages = math.ceil(len(self.__dataset) / page_size)
-     
+
         next_page = page + 1 if page < total_pages else None
         prev_page = page - 1 if page > 1 else None
-            
+    
         return {
                 'page_size': len(data),
                 'page': page,
@@ -70,4 +70,3 @@ class Server:
                 'prev_page': prev_page,
                 'total_pages': total_pages
         }
-     
